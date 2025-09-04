@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1757020600047,
+    "createdAt": "2025-09-04T21:16:40.047Z",
+    "updatedAt": "2025-09-04T21:37:23.923Z",
+    "nome": "Isabela Caroline Reiter",
+    "email": "isabela@gmail.com",
+    "telefone": "(99) 99999-9999",
+    "titulo": "Programador",
+    "endereco": {
+      "cep": "00000-000",
+      "rua": "Amazonas",
+      "numero": "45",
+      "bairro": "Fortaleza",
+      "cidade": "Blumenau",
+      "estado": "SC"
+    },
+    "resumo": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "experiencias": [
+      {
+        "cargo": "Programador",
+        "empresa": "Benner",
+        "inicio": "2025-03",
+        "fim": "2025-04",
+        "descricao": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    ],
+    "formacoes": [
+      {
+        "curso": "aaaaaaaaa",
+        "instituicao": "aaaaaaaaaaaa",
+        "conclusao": "2023"
+      }
+    ],
+    "idiomas": [
+      {
+        "idioma": "ingles",
+        "nivel": "Intermediário"
+      }
+    ]
+  }
+]

@@ -1,57 +1,59 @@
 const express = require("express");
-const cors = require("cors");
 const fs = require("fs");
-const { v4: uuidv4 } = require("uuid");
+const path = require("path");
 
-const app = express();
-const PORT = 5000;
+const router = express.Router();
+const file = path.join(__dirname, "../data.json");
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-const DB_FILE = "./db.json";
-
-// Função auxiliar para ler DB
-function readDB() {
-  if (!fs.existsSync(DB_FILE)) {
-    fs.writeFileSync(DB_FILE, JSON.stringify({ curriculos: [] }, null, 2));
-  }
-  const data = fs.readFileSync(DB_FILE, "utf-8");
-  return JSON.parse(data);
+function load() {
+  if (!fs.existsSync(file)) return [];
+  return JSON.parse(fs.readFileSync(file));
+}
+function save(data) {
+  fs.writeFileSync(file, JSON.stringify(data, null, 2));
 }
 
-// Função auxiliar para salvar DB
-function writeDB(data) {
-  fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
-}
-
-// Rota: listar todos
-app.get("/curriculos", (req, res) => {
-  const db = readDB();
-  res.json(db.curriculos);
+router.get("/", (req, res) => {
+  const curriculos = load();
+  res.json(curriculos);
 });
 
-// Rota: pegar um por id
-app.get("/curriculos/:id", (req, res) => {
-  const db = readDB();
-  const curriculo = db.curriculos.find((c) => c.id === req.params.id);
-  if (!curriculo) {
-    return res.status(404).json({ error: "Currículo não encontrado" });
-  }
+router.get("/:id", (req, res) => {
+  const curriculos = load();
+  const id = parseInt(req.params.id);
+  const curriculo = curriculos.find(c => c.id === id);
+  if (!curriculo) return res.status(404).json({ message: "Currículo não encontrado" });
   res.json(curriculo);
 });
 
-// Rota: criar novo
-app.post("/curriculos", (req, res) => {
-  const db = readDB();
-  const novoCurriculo = { id: uuidv4(), ...req.body };
-  db.curriculos.push(novoCurriculo);
-  writeDB(db);
-  res.status(201).json(novoCurriculo);
+router.post("/", (req, res) => {
+  const curriculos = load();
+  const novo = req.body;
+  novo.id = curriculos.length ? curriculos[curriculos.length - 1].id + 1 : 1;
+  novo.createdAt = new Date().toISOString();
+  curriculos.push(novo);
+  save(curriculos);
+  res.status(201).json(novo);
 });
 
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
+router.put("/:id", (req, res) => {
+  const curriculos = load();
+  const id = parseInt(req.params.id);
+  const idx = curriculos.findIndex(c => c.id === id);
+  if (idx === -1) return res.status(404).json({ message: "Currículo não encontrado" });
+
+  curriculos[idx] = { ...curriculos[idx], ...req.body, id };
+  save(curriculos);
+  res.json(curriculos[idx]);
 });
+
+router.delete("/:id", (req, res) => {
+  const curriculos = load();
+  const id = parseInt(req.params.id);
+  const novo = curriculos.filter(c => c.id !== id);
+  if (novo.length === curriculos.length) return res.status(404).json({ message: "Currículo não encontrado" });
+  save(novo);
+  res.json({ message: "Excluído com sucesso" });
+});
+
+module.exports = router;
