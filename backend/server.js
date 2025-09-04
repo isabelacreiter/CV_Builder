@@ -1,59 +1,71 @@
 const express = require("express");
+const cors = require("cors");
+const morgan = require("morgan");
 const fs = require("fs");
 const path = require("path");
 
-const router = express.Router();
-const file = path.join(__dirname, "../data.json");
+const app = express();
+const PORT = 5000;
 
-function load() {
-  if (!fs.existsSync(file)) return [];
-  return JSON.parse(fs.readFileSync(file));
-}
-function save(data) {
-  fs.writeFileSync(file, JSON.stringify(data, null, 2));
-}
+// Caminho do arquivo JSON
+const dataPath = path.join(__dirname, "models", "curriculos.json");
 
-router.get("/", (req, res) => {
-  const curriculos = load();
+// Middlewares
+app.use(cors());
+app.use(express.json());
+app.use(morgan("dev"));
+
+// Funções auxiliares
+const readData = () => {
+  if (!fs.existsSync(dataPath)) fs.writeFileSync(dataPath, "[]");
+  const data = fs.readFileSync(dataPath, "utf-8");
+  return JSON.parse(data);
+};
+
+const writeData = (data) => fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
+
+// Rotas
+app.get("/", (_req, res) => res.json({ ok: true, api: "CV Builder API" }));
+
+// Listar todos os currículos
+app.get("/api/curriculos", (_req, res) => {
+  const curriculos = readData();
   res.json(curriculos);
 });
 
-router.get("/:id", (req, res) => {
-  const curriculos = load();
-  const id = parseInt(req.params.id);
-  const curriculo = curriculos.find(c => c.id === id);
-  if (!curriculo) return res.status(404).json({ message: "Currículo não encontrado" });
+// Buscar currículo por id
+app.get("/api/curriculos/:id", (req, res) => {
+  const curriculos = readData();
+  const curriculo = curriculos.find(c => c.id === req.params.id);
+  if (!curriculo) return res.status(404).json({ error: "Currículo não encontrado" });
   res.json(curriculo);
 });
 
-router.post("/", (req, res) => {
-  const curriculos = load();
-  const novo = req.body;
-  novo.id = curriculos.length ? curriculos[curriculos.length - 1].id + 1 : 1;
-  novo.createdAt = new Date().toISOString();
+// Criar novo currículo
+app.post("/api/curriculos", (req, res) => {
+  const curriculos = readData();
+  const novo = { ...req.body, id: Date.now().toString() };
   curriculos.push(novo);
-  save(curriculos);
+  writeData(curriculos);
   res.status(201).json(novo);
 });
 
-router.put("/:id", (req, res) => {
-  const curriculos = load();
-  const id = parseInt(req.params.id);
-  const idx = curriculos.findIndex(c => c.id === id);
-  if (idx === -1) return res.status(404).json({ message: "Currículo não encontrado" });
-
-  curriculos[idx] = { ...curriculos[idx], ...req.body, id };
-  save(curriculos);
+// Atualizar currículo existente
+app.put("/api/curriculos/:id", (req, res) => {
+  const curriculos = readData();
+  const idx = curriculos.findIndex(c => c.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: "Currículo não encontrado" });
+  curriculos[idx] = { ...curriculos[idx], ...req.body };
+  writeData(curriculos);
   res.json(curriculos[idx]);
 });
 
-router.delete("/:id", (req, res) => {
-  const curriculos = load();
-  const id = parseInt(req.params.id);
-  const novo = curriculos.filter(c => c.id !== id);
-  if (novo.length === curriculos.length) return res.status(404).json({ message: "Currículo não encontrado" });
-  save(novo);
-  res.json({ message: "Excluído com sucesso" });
+// Deletar currículo
+app.delete("/api/curriculos/:id", (req, res) => {
+  let curriculos = readData();
+  curriculos = curriculos.filter(c => c.id !== req.params.id);
+  writeData(curriculos);
+  res.json({ ok: true });
 });
 
-module.exports = router;
+app.listen(PORT, () => console.log(`Server rodando na porta ${PORT}`));
