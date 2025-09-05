@@ -38,7 +38,11 @@ export default function FormPage() {
   }, []);
 
   useEffect(() => {
-    if (editId) api.get(`/curriculos/${editId}`).then(r => setValues(r.data));
+    if (editId) {
+      api.get(`/curriculos/${editId}`)
+        .then(r => setValues(r.data))
+        .catch(() => Swal.fire({ icon: "error", title: "Erro", text: "Não foi possível carregar o currículo" }));
+    }
   }, [editId]);
 
   const handleChange = (path, value) => {
@@ -61,11 +65,16 @@ export default function FormPage() {
       const valid = await schemaCurriculo.validate(values, { abortEarly: false });
       if (editId) await api.put(`/curriculos/${editId}`, valid);
       else await api.post("/curriculos", valid);
+
       await Swal.fire({ icon: "success", title: "Sucesso!", text: "Currículo salvo com sucesso." });
       nav("/visualizar-curriculos");
     } catch (err) {
       if (err.name === "ValidationError") {
-        Swal.fire({ icon: "error", title: "Validação", html: `<pre style="text-align:left">${err.errors.join("<br/>")}</pre>` });
+        Swal.fire({
+          icon: "error",
+          title: "Validação",
+          html: `<pre style="text-align:left">${err.errors.join("<br/>")}</pre>`,
+        });
       } else {
         Swal.fire({ icon: "error", title: "Erro ao salvar" });
       }
@@ -76,11 +85,10 @@ export default function FormPage() {
     <>
       <Header />
       <NavBar />
-
       <section className="py-8 max-w-6xl mx-auto">
         <h1 className="text-2xl font-semibold mb-4">{editId ? "Editar Currículo" : "Criar Currículo"}</h1>
-
         <form onSubmit={onSubmit} className="space-y-6">
+
           {/* Informações Pessoais */}
           <div className="bg-white border rounded-xl p-6">
             <h2 className="text-lg font-semibold mb-3">Informações Pessoais</h2>
@@ -169,11 +177,10 @@ export default function FormPage() {
 
           <div className="flex gap-3">
             <button type="submit" className="btn-primary">{editId ? "Salvar Alterações" : "Salvar Currículo"}</button>
-            <button type="button" className="btn-ghost" onClick={() => window.history.back()}>Cancelar</button>
+            <button type="button" className="btn-sec" onClick={() => nav("/visualizar-curriculos")}>Cancelar</button>
           </div>
         </form>
       </section>
-
       <Footer />
     </>
   );

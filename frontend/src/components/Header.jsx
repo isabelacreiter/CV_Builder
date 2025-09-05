@@ -10,13 +10,6 @@ export default function Header() {
           <span className="font-semibold text-xl">CV Builder</span>
         </Link>
         <nav className="flex gap-4 text-sm">
-          <NavLink to="/" className="hover:text-indigo-600">Início</NavLink>
-          <NavLink to="/criar-curriculo" className="flex items-center gap-1 hover:text-indigo-600">
-            <FaPlusCircle /> Criar currículo
-          </NavLink>
-          <NavLink to="/visualizar-curriculos" className="flex items-center gap-1 hover:text-indigo-600">
-            <FaListUl /> Visualizar currículos
-          </NavLink>
         </nav>
       </div>
     </header>

@@ -38,5 +38,45 @@
         "nivel": "Intermediário"
       }
     ]
+  },
+  {
+    "nome": "isa",
+    "email": "isa@gmail",
+    "telefone": "(99) 99999-9999",
+    "titulo": "x",
+    "endereco": {
+      "cep": "99999-999",
+      "rua": "x",
+      "numero": "99",
+      "bairro": "x",
+      "cidade": "x",
+      "estado": "XX"
+    },
+    "resumo": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "experiencias": [
+      {
+        "cargo": "x",
+        "empresa": "x",
+        "inicio": "2023-05",
+        "fim": "2023-04",
+        "descricao": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      }
+    ],
+    "formacoes": [
+      {
+        "curso": "c",
+        "instituicao": "c",
+        "conclusao": "2023"
+      }
+    ],
+    "idiomas": [
+      {
+        "idioma": "x",
+        "nivel": "Básico"
+      }
+    ],
+    "id": "1757034036368",
+    "createdAt": "2025-09-05T01:00:36.368Z",
+    "updatedAt": "2025-09-05T01:00:36.368Z"
   }
 ]
